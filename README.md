@@ -1,4 +1,6 @@
 # UefiParser
 Can be used to parsing the following payload: (Include but not limit)
-Microcode Payload
-Capsule Payload
+
+1) Microcode Payload
+
+2) Capsule Payload
