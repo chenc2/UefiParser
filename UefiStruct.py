@@ -5,7 +5,7 @@ from UefiBaseType import UEFI_TYPE_MAPPING
 
 def BaseTypeLen(BaseType):
   return calcsize(UEFI_TYPE_MAPPING[BaseType])
-  
+
 def StructLen(StructType):
   Len = 0
   for Type in StructType:
