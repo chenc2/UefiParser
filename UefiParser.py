@@ -46,6 +46,9 @@ def DumpCapsule(CapFile):
   print ("  Flags            - 0x%x" % (Header[2]))
   print ("  CapsuleImageSize - 0x%x" % (Header[3]))
   print ("")
+  #
+  # Do not use Offset += sizeof (EFI_CAPSULE_HEADER)
+  #
   Offset = Offset + Header[1]
 
   Header = ParseStruct(EFI_FIRMWARE_MANAGEMENT_CAPSULE_HEADER, data[Offset:])
@@ -72,13 +75,13 @@ def DumpCapsule(CapFile):
     print ("PayloadItem[%d] ImageHeader:" % (index), end='')
     print (" (Payload Offset = 0x%x)" % (Offset))
     Header = ParseStruct(EFI_FIRMWARE_MANAGEMENT_CAPSULE_IMAGE_HEADER, data[Offset:])
-    print ("  Version")
-    print ("  UpdateImageTypeId      - 0x%x" % (Header[0]))
-    print ("  UpdateImageIndex       - %s" % (GuidToString(Header[1])))
-    print ("  UpdateImageSize        - 0x%x" % (Header[2]))
-    print ("  UpdateVendorCodeSize   - 0x%x" % (Header[3]))
+    print ("  Version                - 0x%x" % (Header[0]))
+    print ("  UpdateImageTypeId      - %s" % (GuidToString(Header[1])))
+    print ("  UpdateImageIndex       - 0x%x" % Header[2])
+    print ("  UpdateImageSize        - 0x%x" % (Header[6]))
+    print ("  UpdateVendorCodeSize   - 0x%x" % (Header[7]))
     if Header[0] >= 0x2:
-      print ("  UpdateHardwareInstance - 0x%x" % (Header[4]))
+      print ("  UpdateHardwareInstance - 0x%x" % (Header[8]))
     Offset = Offset + StructLen(EFI_FIRMWARE_MANAGEMENT_CAPSULE_IMAGE_HEADER)
 
 def DumpMicrocode(uCodeFile):
