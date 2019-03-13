@@ -103,7 +103,10 @@ def DumpMicrocode(uCodeFile):
   print ("")
   Offset = Offset + StructLen(CPU_MICROCODE_HEADER) + Header[7]
 
-  if Offset == len(data):
+  #
+  # No more data for Extended part.
+  #
+  if 48 + Header[7] == Header[8]:
     return
 
   Header = ParseStruct(CPU_MICROCODE_EXTENDED_TABLE_HEADER, data[Offset:])
