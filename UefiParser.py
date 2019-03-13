@@ -84,8 +84,7 @@ def DumpCapsule(CapFile):
       print ("  UpdateHardwareInstance - 0x%x" % (Header[8]))
     Offset = Offset + StructLen(EFI_FIRMWARE_MANAGEMENT_CAPSULE_IMAGE_HEADER)
 
-def DumpMicrocode(uCodeFile):
-  data = Read(uCodeFile)
+def DumpMicrocode(data):
   Offset = 0
 
   Header = ParseStruct(CPU_MICROCODE_HEADER, data[Offset:])
@@ -126,3 +125,6 @@ def DumpMicrocode(uCodeFile):
     print ("  Checksum           - 0x%x" % (Table[2]))
     print ("")
     Offset = Offset + StructLen(CPU_MICROCODE_EXTENDED_TABLE)
+  
+  assert (Offset == Header[8])
+  return Offset
