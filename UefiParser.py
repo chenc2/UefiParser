@@ -5,6 +5,7 @@ from UefiStruct import ParseStruct
 from UefiStruct import BaseTypeLen
 from UefiStruct import StructLen
 
+from UefiBaseType import UINT32
 from UefiBaseType import UINT64
 
 from UefiBaseType import EFI_CAPSULE_HEADER
@@ -84,7 +85,47 @@ def DumpCapsule(CapFile):
       print ("  UpdateHardwareInstance - 0x%x" % (Header[8]))
     Offset = Offset + StructLen(EFI_FIRMWARE_MANAGEMENT_CAPSULE_IMAGE_HEADER)
 
+def CheckSum32(data,len):
+  if len%4 != 0:
+    assert(False)
+  Sum32 = 0
+  for offset in range(0,len,4):
+    Sum32 += ParseBaseType(UINT32, data[offset:offset+4])
+    if Sum32 > 4294967295:
+      Sum32 = Sum32 - 4294967295 - 1
+  return Sum32
+
+def IsMicrocodeValid(data):
+  if len(data) < 48:
+    assert(False)
+
+  Header = ParseStruct(CPU_MICROCODE_HEADER, data)
+
+  if int(Header[0]) != 1:
+    return False
+
+  if int(Header[5]) != 1:
+    return False;
+
+  if CheckSum32(data, int(Header[8])) != 0:
+    return False
+
+  if int(Header[7]) != 0:
+    if int(Header[8]) < 48:
+      return False
+
+  if int(Header[8]) % 1024 != 0:
+    return False
+
+  if int(Header[7]) % 4 != 0:
+    return False
+
+  return True
+
 def DumpMicrocode(data):
+  if not IsMicrocodeValid(data):
+    return None
+
   Offset = 0
 
   Header = ParseStruct(CPU_MICROCODE_HEADER, data[Offset:])
@@ -125,6 +166,6 @@ def DumpMicrocode(data):
     print ("  Checksum           - 0x%x" % (Table[2]))
     print ("")
     Offset = Offset + StructLen(CPU_MICROCODE_EXTENDED_TABLE)
-  
+
   assert (Offset == Header[8])
   return Offset
