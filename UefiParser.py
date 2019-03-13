@@ -16,16 +16,6 @@ from UefiBaseType import CPU_MICROCODE_HEADER
 from UefiBaseType import CPU_MICROCODE_EXTENDED_TABLE_HEADER
 from UefiBaseType import CPU_MICROCODE_EXTENDED_TABLE
 
-def Read(File):
-  if not os.path.isfile(File):
-    assert(False)
-
-  fd = open(File, "rb")
-  data = fd.read()
-  fd.close()
-
-  return data
-
 def GuidToString(GuidList):
   GuidString = "{"
   for index in range(len(GuidList)):
@@ -34,8 +24,7 @@ def GuidToString(GuidList):
       GuidString = GuidString + "{"
   return GuidString[:-2] + "}}"
 
-def DumpCapsule(CapFile):
-  data = Read(CapFile)
+def DumpCapsule(data):
   Offset = 0
 
   Header = ParseStruct(EFI_CAPSULE_HEADER, data[Offset:])
@@ -90,6 +79,8 @@ def DumpCapsule(CapFile):
       Offset = Offset + StructLen(EFI_FIRMWARE_MANAGEMENT_CAPSULE_IMAGE_HEADER)
     else:
       Offset = Offset + StructLen(EFI_FIRMWARE_MANAGEMENT_CAPSULE_IMAGE_HEADER) - BaseTypeLen(UINT64)
+
+  return Offset
 
 def CheckSum32(data,len):
   if len%4 != 0:
