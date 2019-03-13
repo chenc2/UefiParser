@@ -81,9 +81,15 @@ def DumpCapsule(CapFile):
     print ("  UpdateImageIndex       - 0x%x" % Header[2])
     print ("  UpdateImageSize        - 0x%x" % (Header[6]))
     print ("  UpdateVendorCodeSize   - 0x%x" % (Header[7]))
+    #
+    # If the EFI_FIRMWARE_MANAGEMENT_CAPSULE_IMAGE_HEADER is version 1,
+    # Header should exclude UpdateHardwareInstance field
+    #
     if Header[0] >= 0x2:
       print ("  UpdateHardwareInstance - 0x%x" % (Header[8]))
-    Offset = Offset + StructLen(EFI_FIRMWARE_MANAGEMENT_CAPSULE_IMAGE_HEADER)
+      Offset = Offset + StructLen(EFI_FIRMWARE_MANAGEMENT_CAPSULE_IMAGE_HEADER)
+    else:
+      Offset = Offset + StructLen(EFI_FIRMWARE_MANAGEMENT_CAPSULE_IMAGE_HEADER) - BaseTypeLen(UINT64)
 
 def CheckSum32(data,len):
   if len%4 != 0:
