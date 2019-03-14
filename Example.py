@@ -1,8 +1,24 @@
 import os
 import sys
 
-from UefiParser import DumpCapsule
-from UefiParser import DumpMicrocode
+from ParserLibCapsule import *
+from ParserLibuCode import *
 
 if __name__ == "__main__":
-  DumpCapsule("Red.cap")
+  fd = open("uCode.cap", "rb")
+  data = fd.read()
+  fd.close()
+
+  #
+  # Dump Capsule Header
+  #
+  obj = Capsule(data)
+  obj.Dump()
+
+  #
+  # Dump Capsule Body
+  #
+  for Addr in obj.GetPayloadAddrList():
+    print ("")
+    uCode = Microcode(data[Addr:])
+    uCode.Dump()
