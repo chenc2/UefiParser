@@ -5,6 +5,9 @@ from TypeFv import *
 from TypeCap import *
 from TypeuCode import *
 
+Prefix    = ["|", "| |", "|   |", "|     |", "|       |"]
+Relation  = ["|", "|\ ", "|  \ ", "|    \ ", "|      \ "]
+
 def FormatGuid(GuidList):
   GuidString = "{"
   for index in range(len(GuidList)):
