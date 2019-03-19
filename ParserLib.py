@@ -1,7 +1,9 @@
 import os
 
 from UefiStruct import *
-from UefiBaseType import *
+from TypeFv import *
+from TypeCap import *
+from TypeuCode import *
 
 def FormatGuid(GuidList):
   GuidString = "{"
