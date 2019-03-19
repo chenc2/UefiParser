@@ -111,9 +111,9 @@ class Capsule:
     print ("%s" % (self.__Prefix["L3"]))
     print ("%sBinary:" % (self.__Prefix["L3"]), end = "")
     print (" (Payload Offset = 0x%x)" % (Offset))
-    print ("%s  Option1, uCode     payload" % (self.__Prefix["L3"]))
-    print ("%s  Option2, uCodeBgup Payload, [FV + BgupHeader + script.bin + CertHeader + SignedData]" % (self.__Prefix["L3"]))
-    print ("%s  Others" % (self.__Prefix["L3"]))
+    print ("%s  Option1, [uCod]" % (self.__Prefix["L3"]))
+    print ("%s  Option2, [FvHeader + uCode] + [BgupHeader + script.bin + CertHeader + SignedData]" % (self.__Prefix["L3"]))
+    print ("%s  Option3, [FvHeader + uCode]" % (self.__Prefix["L3"]))
     self.__PayloadAddressList.append(Offset)
 
   def Dump(self):
