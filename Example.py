@@ -3,9 +3,10 @@ import sys
 
 from ParserLibCapsule import *
 from ParserLibuCode import *
+from ParserLibFv import *
 
 if __name__ == "__main__":
-  fd = open("uCode.cap", "rb")
+  fd = open("uCodeSlot.cap", "rb")
   data = fd.read()
   fd.close()
 
@@ -14,11 +15,28 @@ if __name__ == "__main__":
   #
   obj = Capsule(data)
   obj.Dump()
-
+  
   #
   # Dump Capsule Body
   #
-  for Addr in obj.GetPayloadAddrList():
-    print ("")
-    uCode = Microcode(data[Addr:])
-    uCode.Dump()
+  Fv = FirmwareVolumn(data)
+  Fv.SetFirstFv(True)
+  print ("")
+  for Addr in obj.GetPayloadOffsetList():
+    Fv.SetBegOffset(Addr)
+    Fv.DumpOne()
+  
+  #
+  # If want to dump uCodeBgup.cap or uCode.cap
+  # Should parse Fv before dump uCode payload
+  #
+  
+  #
+  # Dump File
+  #
+  uCode = Microcode(data)
+  uCode.SetFirstOutput(True)
+  print ("")
+  for Addr in Fv.GetFileOffsetList():
+    uCode.SetBegOffset(Addr)
+    uCode.DumpOne()

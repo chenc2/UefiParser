@@ -43,8 +43,8 @@ class Microcode(ParserLib):
 
   def __MainHeader(self):
     Header    = ParseStruct(CPU_MICROCODE_HEADER, self._Payload[self._CurOffset:])
-    Prefix    = self._PrefixFormat(self._PrefixLevel)
-    Relation  = self._PrefixRelation(self._PrefixLevel)
+    Prefix    = self.PrefixFormat()
+    Relation  = self.PrefixRelation()
 
     if self.__IsFirstOutput:
       self.__IsFirstOutput = False
@@ -71,8 +71,8 @@ class Microcode(ParserLib):
 
   def __ExtendedTableEntry(self, Index):
     self._PrefixLevel += 1
-    Prefix    = self._PrefixFormat(self._PrefixLevel)
-    Relation  = self._PrefixRelation(self._PrefixLevel)
+    Prefix    = self.PrefixFormat()
+    Relation  = self.PrefixRelation()
 
     if Index == 0:
       print ("%s" % (Relation))
@@ -91,8 +91,8 @@ class Microcode(ParserLib):
 
   def __Extended(self):
     self._PrefixLevel += 1
-    Prefix    = self._PrefixFormat(self._PrefixLevel)
-    Relation  = self._PrefixRelation(self._PrefixLevel)
+    Prefix    = self.PrefixFormat()
+    Relation  = self.PrefixRelation()
 
     Header = ParseStruct(CPU_MICROCODE_EXTENDED_TABLE_HEADER, self._Payload[self._CurOffset:])
 

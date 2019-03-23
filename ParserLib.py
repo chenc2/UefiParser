@@ -3,17 +3,6 @@ from TypeFv     import *
 from TypeCap    import *
 from TypeuCode  import *
 
-Prefix    = ["|", "| |", "|   |", "|     |", "|       |"]
-Relation  = ["|", "|\ ", "|  \ ", "|    \ ", "|      \ "]
-
-def FormatGuid(GuidList):
-  GuidString = "{"
-  for index in range(len(GuidList)):
-    GuidString = GuidString + str(hex(GuidList[index])) + ", "
-    if index == 2:
-      GuidString = GuidString + "{"
-  return GuidString[:-2] + "}}"
-
 class ParserLib:
   def __init__(self, Payload):
     self._Payload      = Payload
@@ -22,6 +11,7 @@ class ParserLib:
     self._CurOffset    = 0
 
     self._PrefixLevel  = 0
+    self._MostDepthLv  = 0
 
   def SetBegOffset(self, Offset):
     self._BegOffset = Offset
@@ -35,17 +25,28 @@ class ParserLib:
   def SetPrefixLevel(self, Level):
     self._PrefixLevel = Level
 
-  def _PrefixFormat(self, Level):
-    if Level == 0:
-      return "|"
-    else:
-      return "|" + " " + " " * (Level - 1) * 2 + "|"
+  def GetPrefixLevel(self):
+    return self._PrefixLevel
 
-  def _PrefixRelation(self, Level):
-    if Level == 0:
+  def GetMostDepthLv(self):
+    return self._MostDepthLv
+
+  def _UpPrefixLv(self):
+    self._PrefixLevel += 1
+    if self._PrefixLevel > self._MostDepthLv:
+      self._MostDepthLv = self._PrefixLevel
+
+  def PrefixFormat(self):
+    if self._PrefixLevel == 0:
       return "|"
     else:
-      return "|" + " " * (Level - 1) * 2 + "\ "
+      return "|" + " " + " " * (self._PrefixLevel - 1) * 2 + "|"
+
+  def PrefixRelation(self):
+    if self._PrefixLevel == 0:
+      return "|"
+    else:
+      return "|" + " " * (self._PrefixLevel - 1) * 2 + "\ "
 
   def _FormatGuid(self, GuidList):
     GuidString = "{"

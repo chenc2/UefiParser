@@ -1,4 +1,5 @@
 from ParserLib import *
+from ParserLibFv import *
 from ParserLibuCode import *
 
 class Capsule(ParserLib):
@@ -9,7 +10,7 @@ class Capsule(ParserLib):
 
   def __CapsuleHeader(self):
     Header = ParseStruct(EFI_CAPSULE_HEADER, self._Payload[self._BegOffset:])
-    Prefix = self._PrefixFormat(self._PrefixLevel)
+    Prefix = self.PrefixFormat()
 
     print ("%sEFI_CAPSULE_HEADER:"        % (Prefix), end='')
     print (" (Payload Offset = 0x%x)"     % (self._BegOffset))
@@ -20,9 +21,9 @@ class Capsule(ParserLib):
     self._CurOffset = self._BegOffset + Header[1]
 
   def __ParseEfiFrimwareImageAuthentication(self):
-    self._PrefixLevel += 1
-    Prefix    = self._PrefixFormat(self._PrefixLevel)
-    Relation  = self._PrefixRelation(self._PrefixLevel)
+    self._UpPrefixLv()
+    Prefix    = self.PrefixFormat()
+    Relation  = self.PrefixRelation()
 
     print ("%s" % (Relation))
     print ("%sEFI_FIRMWARE_IMAGE_AUTHENTICATION:" % (Prefix), end='')
@@ -34,9 +35,9 @@ class Capsule(ParserLib):
     self._CurOffset += (BaseTypeLen(UINT64) + ParseBaseType(UINT32, self._Payload[self._CurOffset + BaseTypeLen(UINT64):]))
 
   def __ParseFmpPayloadHeader(self):
-    self._PrefixLevel += 1
-    Prefix    = self._PrefixFormat(self._PrefixLevel)
-    Relation  = self._PrefixRelation(self._PrefixLevel)
+    self._UpPrefixLv()
+    Prefix    = self.PrefixFormat()
+    Relation  = self.PrefixRelation()
 
     Header = ParseStruct(FMP_PAYLOAD_HEADER, self._Payload[self._CurOffset:])
 
@@ -52,9 +53,9 @@ class Capsule(ParserLib):
     self._CurOffset += StructLen(FMP_PAYLOAD_HEADER)
 
   def __ParseRealBinary(self):
-    self._PrefixLevel += 1
-    Prefix    = self._PrefixFormat(self._PrefixLevel)
-    Relation  = self._PrefixRelation(self._PrefixLevel)
+    self._UpPrefixLv()
+    Prefix    = self.PrefixFormat()
+    Relation  = self.PrefixRelation()
 
     print ("%s" % (Prefix))
     print ("%sBinary:" % (Prefix), end = "")
@@ -67,9 +68,9 @@ class Capsule(ParserLib):
     self.__PayloadOffsetList.append(self._CurOffset)
 
   def __CapsulePayload(self, Index):
-    self._PrefixLevel += 1
-    Prefix    = self._PrefixFormat(self._PrefixLevel)
-    Relation  = self._PrefixRelation(self._PrefixLevel)
+    self._UpPrefixLv()
+    Prefix    = self.PrefixFormat()
+    Relation  = self.PrefixRelation()
 
     Header = ParseStruct(EFI_FIRMWARE_MANAGEMENT_CAPSULE_IMAGE_HEADER, self._Payload[self._CurOffset:])
 
@@ -102,11 +103,11 @@ class Capsule(ParserLib):
     self._PrefixLevel -= 1
 
   def __CapsuleBody(self):
-    self._PrefixLevel += 1
+    self._UpPrefixLv()
 
     Header    = ParseStruct(EFI_FIRMWARE_MANAGEMENT_CAPSULE_HEADER, self._Payload[self._CurOffset:])
-    Prefix    = self._PrefixFormat(self._PrefixLevel)
-    Relation  = self._PrefixRelation(self._PrefixLevel)
+    Prefix    = self.PrefixFormat()
+    Relation  = self.PrefixRelation()
 
     print ("%s" % (Relation))
     print ("%sEFI_FIRMWARE_MANAGEMENT_CAPSULE_IMAGE_HEADER:"  % (Prefix), end='')
