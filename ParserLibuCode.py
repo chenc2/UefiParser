@@ -48,11 +48,10 @@ class Microcode(ParserLib):
 
     if self.__IsFirstOutput:
       self.__IsFirstOutput = False
+      self._PrintTitle("Microcode Header", Prefix, Relation)
     else:
-      print ("%s" % (Prefix))
+      self._PrintTitle("Microcode Header", Prefix)
 
-    print ("%sMicrocode Header:" % (Prefix), end = "")
-    print (" (Payload Offset = 0x%x)" % (self._CurOffset))
     print ("%s  HeaderVersion      - 0x%x" % (Prefix, Header[0]))
     print ("%s  UpdateRevision     - 0x%x" % (Prefix, Header[1]))
     print ("%s  ProcessorSignature - 0x%x" % (Prefix, Header[3]))

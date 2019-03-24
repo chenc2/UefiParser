@@ -36,6 +36,9 @@ class ParserLib:
     if self._PrefixLevel > self._MostDepthLv:
       self._MostDepthLv = self._PrefixLevel
 
+  def _DePrefixLv(self):
+    self._PrefixLevel -= 1
+
   def PrefixFormat(self):
     if self._PrefixLevel == 0:
       return "|"
@@ -55,3 +58,9 @@ class ParserLib:
       if index == 2:
         GuidString = GuidString + "{"
     return GuidString[:-2] + "}}"
+  
+  def _PrintTitle(self, Target, Prefix, Relation = None):
+    if Relation != None:
+      print ("%s" % (Relation))
+    
+    print ("%s%s: (Payload Offset = 0x%x)" % (Prefix, Target, self._CurOffset))

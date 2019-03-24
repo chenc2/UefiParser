@@ -3,22 +3,23 @@ from ParserLib import *
 class FirmwareVolumn(ParserLib):
   def __init__(self, Payload):
     ParserLib.__init__(self, Payload)
-    self.__IsFirstFv  = True
-    self.__IsFirstFfs = True
-    self.__EndOfFv    = 0
+    self.__IsFirstFv      = True
+    self.__IsFirstFfs     = True
+    self.__EndOfFv        = 0
     self.__FileOffsetList = []
+    self.__FileParserCb   = None
 
   def __FvHeader(self):
-    Prefix = self.PrefixFormat()
-    Header = ParseStruct(EFI_FIRMWARE_VOLUME_HEADER, self._Payload[self._CurOffset:])
+    Prefix    = self.PrefixFormat()
+    Relation  = self.PrefixRelation()
+    Header    = ParseStruct(EFI_FIRMWARE_VOLUME_HEADER, self._Payload[self._CurOffset:])
 
     if self.__IsFirstFv:
       self.__IsFirstFv = False
+      self._PrintTitle("EFI_FIRMWARE_VOLUME_HEADER", Prefix, Relation)
     else:
-      print ("%s" % (Prefix))
+      self._PrintTitle("EFI_FIRMWARE_VOLUME_HEADER", Prefix)
 
-    print ("%sEFI_FIRMWARE_VOLUME_HEADER:" % (Prefix), end='')
-    print (" (Payload Offset = 0x%x)"         % (self._CurOffset))
     print ("%s  FileSystemGuid  - %s"         % (Prefix, self._FormatGuid(Header[16])))
     print ("%s  FvLength        - 0x%x"       % (Prefix, Header[17]))
     print ("%s  Signature       - 0x%x (%s)"  % (Prefix, Header[18], EFI_SIGNATURE_TO_STR(Header[18])))
@@ -35,17 +36,14 @@ class FirmwareVolumn(ParserLib):
   def __FileHeader(self):
     Prefix    = self.PrefixFormat()
     Relation  = self.PrefixRelation()
-
-    Header = ParseStruct(EFI_FFS_FILE_HEADER, self._Payload[self._CurOffset:])
+    Header    = ParseStruct(EFI_FFS_FILE_HEADER, self._Payload[self._CurOffset:])
 
     if self.__IsFirstFfs:
       self.__IsFirstFfs = False
-      print ("%s" % (Relation))
+      self._PrintTitle("EFI_FFS_FILE_HEADER", Prefix, Relation)
     else:
-      print ("%s" % (Prefix))
+      self._PrintTitle("EFI_FFS_FILE_HEADER", Prefix)
 
-    print ("%sEFI_FFS_FILE_HEADER:" % (Prefix), end='')
-    print (" (Payload Offset = 0x%x)" % (self._CurOffset))
     print ("%s  Name       - %s" % (Prefix, self._FormatGuid(Header[0])))
     print ("%s  Type       - 0x%x" % (Prefix, Header[2]))
     print ("%s  Attributes - 0x%x" % (Prefix, Header[3]))
@@ -53,21 +51,28 @@ class FirmwareVolumn(ParserLib):
     print ("%s  Size       - 0x%x" % (Prefix, FileSize))
     print ("%s  State      - 0x%x" % (Prefix, Header[7]))
     print ("%s  Content    - Binary [0x%x~0x%x]" % (Prefix, self._CurOffset + StructLen(EFI_FFS_FILE_HEADER), self._CurOffset + FileSize))
+    
+    if self.__FileParserCb != None:
+      self.__FileParserCb(self._Payload, self._CurOffset + StructLen(EFI_FFS_FILE_HEADER), self._MostDepthLv + 1)
+    
     self.__FileOffsetList.append(self._CurOffset + StructLen(EFI_FFS_FILE_HEADER))
     self._CurOffset += FileSize
 
   def __Ffs(self):
-    self._PrefixLevel += 1
+    self._UpPrefixLv()
     self.__IsFirstFfs = True
     while self._CurOffset + StructLen(EFI_FFS_FILE_HEADER) < self.__EndOfFv:
       self.__FileHeader()
-    self._PrefixLevel -= 1
+    self._DePrefixLv()
 
   def SetFirstFv(self, First):
     self.__IsFirstFv = First
 
   def GetFileOffsetList(self):
     return self.__FileOffsetList
+
+  def SetFileParserCb(self, Cb):
+    self.__FileParserCb = Cb
 
   def DumpOne(self):
     self._CurOffset = self._BegOffset
